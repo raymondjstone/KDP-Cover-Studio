@@ -2,6 +2,8 @@
 
 A Windows desktop app that formats a book **inside and out** — the print-ready KDP cover, with back, spine and front as a single wrap, and the book's own typeset pages — and exports the two files KDP asks for. A guided setup takes an EPUB to both.
 
+The pages are set the way a book is set: hyphenated on Knuth and Liang's patterns, with a table of contents carrying real page numbers, tables, verse, endnotes, drop caps and a back-of-book index. The spine is drawn for the page count those pages actually came to, which is the one thing a cover cannot be right without.
+
 **[Download the latest release »](https://github.com/raymondjstone/KDP-Cover-Studio/releases/latest)**
 
 ![KDP Cover Studio](docs/screenshots/00-launch.png)
@@ -108,12 +110,39 @@ Most books settle on the first pass — the default layout's own gutter is 0.75"
 
 | | |
 |---|---|
-| **Front matter** | The EPUB's own is dropped and the book gets its own, so a half-title left over from an ebook does not print. An optional **title page designer** carries the title, subtitle, author, series line, imprint and copyright page — seeded from the project, all of it editable. The app writes the year and the convention and never somebody's rights paragraph |
+| **Front matter** | The EPUB's own is dropped and the book gets its own, so a half-title left over from an ebook does not print. An optional **title page designer** carries the title, subtitle, author, series line, imprint and copyright page — seeded from the project, all of it editable, and **drawn while it is being chosen** rather than picked by reading a form. The app writes the year and the convention and never somebody's rights paragraph |
+| **A table of contents** | With the pages the chapters really start on. An EPUB's contents is a list of *links* — there are no pages in an ebook, so there are no numbers in its contents — and a printed one can only be made by something that knows what the finished pages are |
+| **Tables** | Columns decided together, and no column narrower than the widest word it holds. A cell spanning two columns is set in the column it starts in |
+| **Verse** | Kept as its own lines. The measure decides where prose lines fall, but in verse the line is the unit the poem is made of, and re-flowing it destroys the form |
+| **Notes** | An EPUB's footnotes gathered as **endnotes at the back** |
+| **An index** | A real back-of-book index from the author's own terms, with the pages they land on, **set in two columns**. The app will read the manuscript and suggest candidates — names that keep coming back — but chooses none of them |
+| **Drop caps** | A capital sunk into the first lines of a chapter. The letter is drawn separately and the lines beside it set narrower, so the wrap, the justification and the drawing all agree about how many of those there are |
+| **Full-page plates** | A picture filling three quarters of the type area gets the page, with its caption, no folio and no running head |
+| **Hyphenation** | Knuth and Liang's patterns — what TeX has set books with since 1983 — rather than a rule of thumb, because every rule of thumb is a guess at where a word breaks. The panel names the dictionary in use |
+| **Punctuation** | Straight quotes curled, `...` to an ellipsis, a hyphen doing a dash's job to a dash. Setting rather than editing: a curly quote is the same mark as a straight one. 32 of the 39 corpus EPUBs have something to set |
 | **Back matter** | An **"Also by" list**, imported from a `.txt` or `.md` file — one title per line. It belongs to the author rather than to this book, so it lives in one file and every book picks it up on the way to the printer. Markdown is stripped rather than honoured, because the interior carries no styling and the asterisks would print |
 | **Pictures** | Resolved relative to the document that names them, not to the book — matching on filename alone finds the wrong picture the moment two chapters both have a `fig1.jpg` |
 | **Type it cannot draw** | A face without a glyph is reported, and the run is drawn from a face that has it rather than printing `.notdef` |
 | **Two-page spreads** | The only way to see the faults worth seeing — a blank in an awkward place, a chapter opening on the wrong side, a heading stranded at a turn. Page one is a recto, so the first spread has nothing on its left |
 | **Deleting a page** | Subtractive rather than a re-flow, and the renumbering **turns every page after it over**: the gutter moves to the other edge and the running head changes sides. That is what happens in a real book |
+
+### Seeing the whole book
+
+![A contact sheet of the interior](docs/screenshots/11-contact-sheet.jpg)
+
+**The interior as a grid of small pages.** Reviewing a four-hundred-page book one page at a time is two hundred presses, so nobody does it — and the faults that are only visible at the scale of the *book* go to the printer: a chapter opening on a left-hand page, a blank where none was meant, a line stranded at a turn.
+
+It is laid out as spreads rather than pages, because facing pairs show at a glance which side each chapter opens on. **A blank page is drawn as a frame** rather than left as a gap, which is the most useful thing the grid shows and would otherwise be invisible. The pages are small on purpose: it is a view for the shape of the book, and type large enough to read invites proofreading instead. Findings are marked on it.
+
+**And a page at the size it prints.** The cover has been judged at 40 mm for years because that is the size a shopper sees it at; a page is read at its own size, and the pane had only ever shown one fitted to the window, which flatters the type — when the type size is exactly what somebody looking at that pane is trying to decide.
+
+| | |
+|---|---|
+| **Presets** | Eleven controls, each added because it is a decision somebody wants to make — and together a decision nobody wants to make eleven times. A preset writes them once and is not a mode |
+| **A large-print edition** | From the manuscript you already have. It is the one edition print-on-demand makes possible and a publisher's economics never allowed, and libraries buy large print steadily where they buy little else |
+| **Every trim size at once** | Trim size is the earliest decision and the worst-informed one — it settles how long the book is, how thick, what it costs to print and the lowest price it can carry, and it is picked from a dropdown of numbers that mean nothing on their own |
+| **Correcting the chapter list** | Rename or leave out what the EPUB got wrong, keyed by document rather than by position, and **never written back to the EPUB**. The alternative was to open it in another program, fix it, export it again and re-import |
+| **Findings that name a page** | "12 code lines are wider than the column and wrap" is true and unactionable against a four-hundred-page book. The page number is most of the value and clicking the row, which turns to it, is the rest |
 
 **And it can check an interior PDF, including one made elsewhere.** Page count against the cover's — judged by the fold error, which is what KDP actually refuses over — page size against trim and trim-plus-bleed, one page size throughout, the page limit for the binding and paper, and an odd page count, which KDP silences by adding a blank *after* whatever the author thought was the last page. The gutter minimum is stated rather than measured: finding the text block on a page carrying a running head, a folio and a drop cap is guesswork, and being wrong reports a good book as broken.
 
@@ -180,6 +209,8 @@ Applying a template is a re-placement, not a copy: every layer is repositioned r
 
 **A gradient fade into a second colour costs nothing**, because a colour filter changes no alpha — unlike a **drop shadow**, which is translucent and therefore costs its own layer at export. The properties panel says which is which.
 
+**Capitals are a setting on the layer, not a change to the words.** Every text layer — front cover, spine, blurb, series line — can be set *As typed*, *UPPERCASE* or *Mixed case*. The decision is typographic and the words are not: the same title goes to the spine, the shop listing, the metadata and the interior's title page in ordinary case, and typing it in capitals writes the shouting into the data.
+
 **Match one text layer's look to another** rather than inventing a fourth way to name a style. **Spine sections** let you place type in a third of the spine — and the thirds are thirds of the *safe* length, not the spine, because thirds of the spine run into the trim.
 
 ### Type over artwork, done properly
@@ -240,7 +271,11 @@ A **palette** travels with the document rather than living in settings — it is
 
 A pane showing the **front panel, trimmed, at about 40 mm** — the size a shop actually shows a cover, and the size at which you should judge it. Trimmed rather than with bleed, because the bleed is guillotined off before anybody sees it and including it flatters the design. It renders through the same exporter as the print file, so it cannot show you something kinder than what prints.
 
-**Whether the title survives shop size is measured, not eyeballed** — contrast against what is actually behind the type, at the size it will be seen. Where the two colours are plainly different and the contrast is short, the finding says **it is the colour holding the type apart, not the lightness**: a vivid red title on a vivid green ground reads perfectly well in colour and is lost on a Kindle's e-ink screen and in anything printed in black and white. Reported at 1.1:1 with no reason given, that reads as the app being broken. And **two covers can be put side by side** at that size, which is the only way to judge a series as a series.
+**Whether the title survives shop size is measured, not eyeballed** — contrast against what is actually behind the type, at the size it will be seen. Where the two colours are plainly different and the contrast is short, the finding says **it is the colour holding the type apart, not the lightness**: a vivid red title on a vivid green ground reads perfectly well in colour and is lost on a Kindle's e-ink screen and in anything printed in black and white. Reported at 1.1:1 with no reason given, that reads as the app being broken.
+
+The same finding says **which pairs a colour-blind reader loses as well**, as a clause rather than a second check — luminance contrast survives every inherited colour vision deficiency intact, so anything readable in greyscale is readable to a colour-blind reader, and a separate finding could only ever repeat the greyscale one. Measuring it disproved the premise it was started on: "red and green" is the folk description and is not what collapses — a saturated red and a mid green of matching luminance come through the Viénot simulation about sixty ΔE apart, because a dichromat's own luminance weighting separates them where Rec. 709 does not. What actually collapses is **adjacent hues** — red against orange, crimson against amber, blue against violet — which is exactly what a warm or a cool palette reaches for. Twenty-six pairs out of 46,656 across the sRGB cube.
+
+And **two covers can be put side by side** at that size, which is the only way to judge a series as a series.
 
 ### Live preflight
 
@@ -284,9 +319,18 @@ Transparency is flattened **without losing the type**. Rasterising the whole cov
 
 **Everything, in one press** — every output the cover produces, into one folder. A layer error refuses only the outputs that show that layer, rather than the whole batch.
 
-**A 3D mockup PNG** for a listing or a post — now of **both sides of the book**. The back is the one carrying the blurb and the barcode, and it was the one thing here nothing had ever drawn as an object. It is drawn rather than flipped, because a horizontal flip would print the blurb backwards; what changes is which panel stands upright and which way the spine is sheared. Both are shown side by side, at one height, and written from one file dialog — a second dialog is the step at which one of a pair ends up in a different folder.
+**A 3D mockup PNG** for a listing or a post, of **both sides of the book** — the back being the one that carries the blurb and the barcode. It is drawn rather than flipped, because a horizontal flip would print the blurb backwards. Both are written from one file dialog, since a second dialog is the step at which one of a pair ends up in a different folder.
 
-It is the one renderer allowed to flatter, so nothing that judges the design is permitted to read it.
+The mockup is **a real projection**: six textured faces of a box in space, turned by yaw and pitch, projected through a camera at six and a half book-heights and lit per face — and you can drag it. It used to be two faces sheared into place by an affine transform, which is a camera at infinity, and the three named angles were very nearly the same picture: each foreshortened the *spine* while drawing the front cover at its full width, so the whole visible difference between "front on" and "well turned" was a few pixels. The book never actually turned.
+
+From the same renderer:
+
+- **The series standing together** — five spines in a row with the design carrying across them. Each volume takes its depth from its own page count and the paper's measured caliper, so a 180-page book beside a 600-page one looks like what it is. That is the thing no mockup generator on the internet gets right, because none of them knows how many pages a volume has.
+- **A turntable, as a looping GIF.** The viewer helps somebody pick an angle; the turntable is the shot that performs on a post.
+- **Quote cards** — a passage set on the book's own colours and typeface, with the title and author exactly as printed. Made in a graphics program it drifts from the cover within a book or two, and a card that *nearly* matches is worse than one that plainly does not.
+- **The square cover an audiobook listing needs**, from artwork the app is already holding, rather than cropping in a graphics program until the author's name is off the bottom. What a crop would cut is named before the file dialog opens.
+
+These are the renderers allowed to flatter, so nothing that judges the design is permitted to read them.
 
 ![3D mockup render, front and back](docs/screenshots/07-mockup.png)
 
@@ -295,6 +339,20 @@ It is the one renderer allowed to flatter, so nothing that judges the design is 
 **Proof checklist** — written for a **bound** copy, which is what KDP sends. Half the useful measurements only exist once the thing is folded.
 
 **And it can check a cover PDF, including one this app did not make.** It recovers the page count the cover was drawn for by solving back through the geometry, and leads with the fold error, which is exact. The recovered count cannot be: one page of B&W white is 0.162 pt of spine, KDP rounds its declared page size to whole points and the writer quantises it again — so it says "about 310 pages (within 2)" rather than inventing precision. **An interior PDF can be checked too**, and that is the stronger half of the same question, because an interior states its page count instead of having it recovered.
+
+**And the two files are checked against each other.** Each file's own check compared it against the *project's* page count — so when that number was the thing that was wrong, which is the usual case, both files were judged against the same wrong reference and both came back clean: two green reports and a refused upload. The pair check makes the comparison KDP makes. A PDF can also be **measured against PDF/X-1a clause by clause**, which says what would have to change rather than assuming the answer.
+
+### What it costs to print, and what it earns
+
+All of this otherwise lands at the publishing form, by which point the book is written and the cover is drawn.
+
+Printing cost is a fixed charge plus a charge **per page**, and the page count is the one number this app is unusually confident about — measured off the interior it has just set, or read out of the PDF, rather than guessed. Everything about the money follows from it.
+
+**The one that catches people is the minimum list price.** KDP will not let a book be sold below its floor, and that floor is a different number in every store because the printing cost is. A 267-page black-and-white paperback costs £3.37 to print for Amazon.co.uk and $4.05 for Amazon.com, so the lowest it can be listed at is £5.62 and $6.75 respectively. A price that clears the floor at home can therefore be refused in the store where most of the copies sell.
+
+The app shows what the book earns in each of Amazon's stores — separate floors, separate prices, **nothing converted**, because a price is set separately in each store and a converted one is not what anybody is charged. The rates are an estimate from Amazon's published figures, carrying the date they were read.
+
+**KDP's own publishing form can be answered from the project**, with the two files checked against each other first. The description field is not a text box: it accepts a small subset of HTML, counts its 4,000 characters *including* the markup, and discards what falls outside — so the blurb is turned into the markup that field actually wants.
 
 ### Your work is kept safe
 
@@ -335,14 +393,16 @@ Projects are saved as `.kdpcoverstudio` — a ZIP holding the document plus a co
 
 ## Current release
 
-**Version 1.3.3** — `KDPCoverStudio.msi`, 53.6 MB. See the [release notes](https://github.com/raymondjstone/KDP-Cover-Studio/releases/latest) for what changed.
+**Version 1.3.4** — `KDPCoverStudio.msi`, 53.7 MB. See the [release notes](https://github.com/raymondjstone/KDP-Cover-Studio/releases/latest) for what changed.
 
-Verified at build: **1741 tests** (1740 passing, one skipped) and **390/390 template assertions across 39 templates**.
+Verified at build: **2310 tests** (2309 passing, one skipped) and **390/390 template assertions across 39 templates**.
 
 ### Known limitations
 
-- **The interior formatter is written for prose.** Tables, footnotes, verse, indexes and drop caps are not in it. Each is real work and none of them is a novel.
-- **The exported PDFs are plain PDF, not PDF/X-1a.** KDP says PDF/X "preferred" and accepts plain PDF, which is first on its own list of formats; PDF/X needs an output intent and CMYK the renderer will not write. Fonts are embedded as subsets, which is the same class of recommendation.
+- **Footnotes are gathered as endnotes**, not set at the foot of their own page. That is the gutter's fixed point again in a place where it does not converge tidily — reserving room on a page for the notes that fall on it changes which notes fall on it — and it is named rather than quietly approximated.
+- **Indexes need the author's own terms.** The app suggests candidates and sets the result, but an EPUB carries no index markup and a machine that chose the terms itself would produce a concordance.
+- **A cell spanning two columns is set in the column it starts in.** Tables are otherwise set with their columns.
+- **The exported PDFs are plain PDF, not PDF/X-1a.** KDP says PDF/X "preferred" and accepts plain PDF, which is first on its own list of formats; PDF/X-1a needs every colour in CMYK, greyscale or a named spot, and the renderer writes DeviceRGB with no switch to change it. The app now **measures a PDF against the standard clause by clause** and says which one fails, rather than assuming. Fonts are embedded as subsets, which is the same class of recommendation.
 - **The soft proof is a standard SWOP profile, not Amazon's press.** Amazon publishes no ICC profile for its printers, so the closest honest answer is a standard coated CMYK profile — which is what every string the feature produces names. A better profile dropped into Windows' colour folder is picked up without a code change.
 - **Two hardcover figures where Amazon's prose disagrees with Amazon's artwork**, recorded rather than resolved: the safe area (16 mm stated, 18.2 mm measured) and the barcode inset (19 mm stated, 0.25" above the safe area measured). The app follows the artwork, which is what gets printed.
 - **The prose-only rules are transcribed, not derived.** Page-count limits, Expanded Distribution eligibility and the minimum type size come from Amazon's help pages rather than from the templates, so nothing here would notice Amazon changing them. Each carries the date it was checked and a link to its source.
