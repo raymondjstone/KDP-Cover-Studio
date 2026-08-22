@@ -1,8 +1,10 @@
 # KDP Cover Studio
 
-A Windows desktop app that formats a book **inside and out** — the print-ready KDP cover, with back, spine and front as a single wrap, and the book's own typeset pages — and exports the two files KDP asks for. A guided setup takes an EPUB to both.
+A Windows desktop app that formats a book **inside and out** — the print-ready KDP cover, with back, spine and front as a single wrap, and the book's own typeset pages — and exports the files KDP asks for. A guided setup takes the manuscript you already have to all of them.
 
-The pages are set the way a book is set: hyphenated on Knuth and Liang's patterns, with a table of contents carrying real page numbers, tables, verse, endnotes, drop caps and a back-of-book index. The spine is drawn for the page count those pages actually came to, which is the one thing a cover cannot be right without.
+**Write in whatever you write in.** Word, Markdown, plain text, HTML, PDF or EPUB — one file, or a folder of chapters in the order you put them in. What comes out is the print-ready cover, the typeset interior PDF, and, since 1.4.0, **the EPUB ebook**: written from the same corrected book as the paperback and wearing the same cover.
+
+The pages are set the way a book is set: hyphenated on Knuth and Liang's patterns, with a table of contents carrying real page numbers, tables, verse, endnotes, drop caps, a back-of-book index, and the italics, bold and underlining the manuscript asks for. The spine is drawn for the page count those pages actually came to, which is the one thing a cover cannot be right without.
 
 **[Download the latest release »](https://github.com/raymondjstone/KDP-Cover-Studio/releases/latest)**
 
@@ -10,31 +12,52 @@ The pages are set the way a book is set: hyphenated on Knuth and Liang's pattern
 
 ---
 
-## From a manuscript to both files, in five steps
+## From a manuscript to finished files, in six steps
 
 ![The guided setup](docs/screenshots/08-guided-setup.png)
 
-**File ▸ Set up a book from an EPUB…** asks five questions and nothing else: the manuscript, the book, the interior, the cover, and what it made.
+**File ▸ New book from a manuscript…** — first on the File menu, above New — asks six questions and nothing else: what you are making, the manuscript, the book, the interior, the cover, and what it made.
+
+It opens by asking **what you are making**, because the answer changes what is worth asking next. A paperback and a hardcover are different shapes and a book cannot be both; an ebook is not a third kind of book but another thing this app makes from the same work, so it sits beside either as a checkbox. Choose the ebook on its own and the interior step is skipped rather than shown and disabled — trim, paper and page count reach an ebook through nothing at all.
 
 It exists because of the failure the interior formatter was written after: **two KDP rejections in one afternoon, both a cover whose spine disagreed with the interior that was uploaded**. The spine is made of the page count and nothing else, and until the pages are actually set, the page count is an estimate. So the wizard sets the book's own pages first, and the cover it then draws is drawn for that exact number.
 
 | Step | What it settles |
 |---|---|
-| **The manuscript** | An EPUB supplies the title, the author, the blurb and the length. You can go on without one and type the title yourself |
-| **The book** | Binding, trim size and paper — the three fields that re-flow every layer, so they are asked before anything is drawn. They start as your defaults |
-| **The interior** | Body face, size, leading, an optional title page. Press *Set the book now* and the page count stops being an estimate |
-| **The cover** | A design, the EPUB's own artwork, and the option to draw the wrap's background colour out of that artwork so the three panels read as one book |
-| **What it made** | A summary. **Nothing has been written to disk** — the cover opens in the editor and saving is yours to do |
+| **What you are making** | A paperback or a hardcover — or no printed book at all — with the ebook as a checkbox beside it. Asked first, because the rest of the questions depend on the answer |
+| **The manuscript** | The files the book is written in, in the order you put them in. They supply the title, the author and the length — and from an EPUB, the blurb and the cover art as well. You can go on without one and type the title yourself |
+| **The book** | Trim size and paper — the fields that re-flow every layer, so they are asked before anything is drawn. They start as your defaults |
+| **The interior** | Body face, size, leading, an optional title page. **The book is laid out on arrival**, from the files already chosen, so the page count is exact by construction |
+| **The cover** | A design, the manuscript's own artwork where it has some, and the option to draw the wrap's background colour out of that artwork so the three panels read as one book |
+| **What it made** | A summary that names the commands for what you asked for. **Nothing has been written to disk** — the cover opens in the editor and saving is yours to do |
+
+![The interior step, laid out on arrival](docs/screenshots/13-interior-step.png)
+
+**The page count on that step is not an estimate.** It used to have a button on it, and pressing it was only obvious to somebody who already knew that the spine is page count times caliper and that KDP refuses a cover whose spine disagrees with the interior beside it — which is exactly what this path exists for people who do *not* know. So they walked past it, took the estimate, and found out at the upload. Arriving at the step now lays the book out from the files already chosen, and the spine is drawn from the count that comes back. A changed setting marks it stale rather than re-composing on every touch of a spinner, and it is set again on the way out of the step.
 
 Every step is skippable and nothing it sets is final: what comes out is an ordinary project, in the ordinary editor, with ordinary layers. And the book it composed is **handed to the Interior tab rather than thrown away**, so the tab opens on the pages you have just seen counted instead of asking for the manuscript a second time.
 
 The same pipeline runs from the command line, because a batch processor with its own generation logic would drift from the app it automates:
 
 ```
-KDPCoverStudio.exe book.epub --interior --size 6x9 --paper cream --out folder
+KDPCoverStudio.exe book.docx --interior --epub --size 6x9 --paper cream --out folder
 ```
 
-An EPUB path is what selects batch mode — a bare path is also how Windows hands over a double-clicked project, and that has to open the editor rather than start a silent export. Preflight still decides what may be written, every problem is reported rather than just the first, and the project file is written first and always, because it is the one output somebody can open and correct.
+A manuscript path is what selects batch mode — a bare path is also how Windows hands over a double-clicked project, and that has to open the editor rather than start a silent export. `--epub` is a flag beside `--interior` rather than a value for `--binding`, for the same reason the wizard treats it as a checkbox: a book is a paperback or a hardcover and cannot be both, and it can perfectly well be a paperback and an ebook. With `--interior` the manuscript is read once and shared, so the two editions cannot disagree about what is in chapter one. Preflight still decides what may be written, every problem is reported rather than just the first, and the project file is written first and always, because it is the one output somebody can open and correct.
+
+### Several files are one book
+
+![Choosing the manuscript](docs/screenshots/12-manuscript.png)
+
+Choosing the manuscript is a window rather than a file picker, and that is not decoration. A picker hands back the file system's order, which sorts `chapter-10` before `chapter-2` — and a book assembled that way is wrong on its first page, in a way the author may never notice. So the files are listed in the order they will be read, rows drag to move, and there are *Move up* and *Move down* buttons as well, because a drag needs a pointer, a steady hand and sight of the row.
+
+A file with no heading of its own is titled from its filename, tidied — a leading number is how the files are ordered and is not part of the title. One file that will not read costs its own chapter and nothing else. **The order is saved with the project**, because it is the one thing about a folder of chapters that nobody can reconstruct.
+
+**Everything goes through one reader.** Word, Markdown, plain text and PDF are turned into HTML and handed to the same reader an EPUB goes through — the one place that knows what a heading, a scene break, a listing, a table, a note and an emphasised phrase are. A reader per format would be a second set of answers to all of it, and they would disagree the first time any of them changed. A `.docx` needs no new dependency: it is a ZIP holding XML, which is what a project file already is.
+
+**A PDF is marks on pages, and the app says so before it reads one** rather than after. There are no paragraphs, no chapters and no emphasis in a PDF — only glyphs at coordinates — so lines, paragraphs, running heads, folios and words broken at line endings are all inferred, and what cannot be recovered at all is named up front. The check on it is a round trip through this app's own exporter: 41 blocks out, 41 blocks back, with the running head and every folio correctly left behind.
+
+**And the question asked about a manuscript is one it can answer.** "What print cannot carry" reads an EPUB's own markup, so against a Word file it would have found nothing and reported that nothing was lost — a confident wrong answer, which is worse than an error, because nobody re-checks a clean report. An EPUB says in the file that a thing is a table or a footnote, so the *book* can be asked; every other format says less, so the answer is about the *format*, and the report says which of the two it asked.
 
 ---
 
@@ -96,7 +119,7 @@ Every dimension on screen carries both units: `0.450" (11.4 mm)`. There is no un
 
 ![The interior, as a two-page spread](docs/screenshots/09-interior.png)
 
-The **Interior** tab lays out the manuscript itself: choose the EPUB, pick the face and the size, set the book, page through it, export the PDF. It used to be a dialog reached from a menu, which was the wrong shape — the interior is half of what gets uploaded, and the page count it produces is the number the cover's spine is made of. As a tab it keeps its state, and the manuscript it uses is the project's own.
+The **Interior** tab lays out the manuscript itself: choose the files, pick the face and the size, set the book, page through it, export the PDF — or the EPUB, which is on the same tab because that is where the book is. It used to be a dialog reached from a menu, which was the wrong shape — the interior is half of what gets uploaded, and the page count it produces is the number the cover's spine is made of. As a tab it keeps its state, and the manuscript it uses is the project's own.
 
 **The button that matters is "Use this page count for the cover".** A count that comes out of the file this app has just written is exact by construction, and it arrives marked as exact, so nothing downstream treats it as a guess.
 
@@ -110,18 +133,19 @@ Most books settle on the first pass — the default layout's own gutter is 0.75"
 
 | | |
 |---|---|
-| **Front matter** | The EPUB's own is dropped and the book gets its own, so a half-title left over from an ebook does not print. An optional **title page designer** carries the title, subtitle, author, series line, imprint and copyright page — seeded from the project, all of it editable, and **drawn while it is being chosen** rather than picked by reading a form. The app writes the year and the convention and never somebody's rights paragraph |
+| **Front matter** | The manuscript's own is dropped and the book gets its own, so a half-title left over from an ebook does not print. An optional **title page designer** carries the title, subtitle, author, series line, imprint and copyright page — seeded from the project, all of it editable, and **drawn while it is being chosen** rather than picked by reading a form. The app writes the year and the convention and never somebody's rights paragraph |
 | **A table of contents** | With the pages the chapters really start on. An EPUB's contents is a list of *links* — there are no pages in an ebook, so there are no numbers in its contents — and a printed one can only be made by something that knows what the finished pages are |
 | **Tables** | Columns decided together, and no column narrower than the widest word it holds. A cell spanning two columns is set in the column it starts in |
 | **Verse** | Kept as its own lines. The measure decides where prose lines fall, but in verse the line is the unit the poem is made of, and re-flowing it destroys the form |
-| **Notes** | An EPUB's footnotes gathered as **endnotes at the back** |
+| **Notes** | The manuscript's footnotes gathered as **endnotes at the back** |
+| **Emphasis** | The italics, bold and underlining the manuscript asks for. In a novel that is not a small thing — italics carry the titles of works, words in another language, a stressed word in dialogue and a character's own thoughts, and across ten corpus novels there are between 41 and 1,112 italic runs apiece, every one of which used to print as roman. Carried as runs that own their own text rather than as offsets into it, so setting the punctuation cannot move them. Only the conventional elements, never a class called `calibre17` |
 | **An index** | A real back-of-book index from the author's own terms, with the pages they land on, **set in two columns**. The app will read the manuscript and suggest candidates — names that keep coming back — but chooses none of them |
 | **Drop caps** | A capital sunk into the first lines of a chapter. The letter is drawn separately and the lines beside it set narrower, so the wrap, the justification and the drawing all agree about how many of those there are |
 | **Full-page plates** | A picture filling three quarters of the type area gets the page, with its caption, no folio and no running head |
 | **Hyphenation** | Knuth and Liang's patterns — what TeX has set books with since 1983 — rather than a rule of thumb, because every rule of thumb is a guess at where a word breaks. The panel names the dictionary in use |
 | **Punctuation** | Straight quotes curled, `...` to an ellipsis, a hyphen doing a dash's job to a dash. Setting rather than editing: a curly quote is the same mark as a straight one. 32 of the 39 corpus EPUBs have something to set |
 | **Back matter** | An **"Also by" list**, imported from a `.txt` or `.md` file — one title per line. It belongs to the author rather than to this book, so it lives in one file and every book picks it up on the way to the printer. Markdown is stripped rather than honoured, because the interior carries no styling and the asterisks would print |
-| **Pictures** | Resolved relative to the document that names them, not to the book — matching on filename alone finds the wrong picture the moment two chapters both have a `fig1.jpg` |
+| **Pictures** | Resolved relative to the document that names them, not to the book — matching on filename alone finds the wrong picture the moment two chapters both have a `fig1.jpg`. A picture sitting beside a Markdown or Word chapter is read where it lies, rather than copied into a working folder that would then have to be kept in step |
 | **Type it cannot draw** | A face without a glyph is reported, and the run is drawn from a face that has it rather than printing `.notdef` |
 | **Two-page spreads** | The only way to see the faults worth seeing — a blank in an awkward place, a chapter opening on the wrong side, a heading stranded at a turn. Page one is a recto, so the first spread has nothing on its left |
 | **Deleting a page** | Subtractive rather than a re-flow, and the renumbering **turns every page after it over**: the gutter moves to the other edge and the running head changes sides. That is what happens in a real book |
@@ -141,7 +165,7 @@ It is laid out as spreads rather than pages, because facing pairs show at a glan
 | **Presets** | Eleven controls, each added because it is a decision somebody wants to make — and together a decision nobody wants to make eleven times. A preset writes them once and is not a mode |
 | **A large-print edition** | From the manuscript you already have. It is the one edition print-on-demand makes possible and a publisher's economics never allowed, and libraries buy large print steadily where they buy little else |
 | **Every trim size at once** | Trim size is the earliest decision and the worst-informed one — it settles how long the book is, how thick, what it costs to print and the lowest price it can carry, and it is picked from a dropdown of numbers that mean nothing on their own |
-| **Correcting the chapter list** | Rename or leave out what the EPUB got wrong, keyed by document rather than by position, and **never written back to the EPUB**. The alternative was to open it in another program, fix it, export it again and re-import |
+| **Correcting the chapter list** | Rename or leave out what the manuscript got wrong, keyed by document rather than by position, and **never written back to your own files**. The alternative was to open it in another program, fix it, export it again and re-import |
 | **Findings that name a page** | "12 code lines are wider than the column and wrap" is true and unactionable against a four-hundred-page book. The page number is most of the value and clicking the row, which turns to it, is the rest |
 
 **And it can check an interior PDF, including one made elsewhere.** Page count against the cover's — judged by the fold error, which is what KDP actually refuses over — page size against trim and trim-plus-bleed, one page size throughout, the page limit for the binding and paper, and an odd page count, which KDP silences by adding a blank *after* whatever the author thought was the last page. The gutter minimum is stated rather than measured: finding the text block on a page carrying a running head, a folio and a drop cap is guesswork, and being wrong reports a good book as broken.
@@ -158,10 +182,10 @@ Where both can be run, this is the stronger of the two checks — an interior PD
 |---|---|
 | The interior this app sets | Exact by construction — it counted the pages it wrote |
 | An interior PDF | Exact, authoritative — read straight from the file |
-| EPUB estimate | A **range**, never a bare number |
+| A manuscript's word count | A **range**, never a bare number |
 | Manual | Whatever you enter |
 
-An EPUB does not contain the typography that determines page count, so an estimate carries ±20%. On a 300-page book that is ±0.135" of spine — more than double the fold tolerance. The app shows a range, keeps words-per-page editable and calibratable, and never lets an estimate look settled. An unconfirmed count is asked about once, at the point it starts to matter.
+A manuscript does not contain the typography that determines page count, so an estimate carries ±20%. On a 300-page book that is ±0.135" of spine — more than double the fold tolerance. The app shows a range, keeps words-per-page editable and calibratable, and never lets an estimate look settled. An unconfirmed count is asked about once, at the point it starts to matter.
 
 **KDP rejects a file over its page limit**, and the limit depends on the binding and the paper. The app says the number out loud rather than letting you discover it at upload. A book over the maximum can be **split into volumes**: the splitter proposes page ranges and can build a series from them, but does not touch your manuscript, because where a book should break is an editorial judgement. Given an EPUB it splits at document boundaries — most EPUBs put one chapter in one document, so the breaks are real ones. Volumes come out deliberately uneven: a reader notices a chapter cut in half and never notices thirty pages of difference.
 
@@ -199,7 +223,9 @@ Applying a template is a re-placement, not a copy: every layer is repositioned r
 
 **Start the next volume from this one.** Most series are written one book at a time, and what people do is Save As and edit — and every field they forget to edit ships. This carries the design and clears what the book *is*: the blurb goes, from the document and its layer, the ISBN goes from every barcode layer, the page count is demoted to manual, and the volume number moves on by one. Every one of those is named in the notes rather than done quietly. It opens with **no file path**, so a reflexive Ctrl+S cannot overwrite volume one with volume two. And a trailing number is only advanced where a word marks it as a volume number — *1984* and *Catch 22* are titles, and an app that shipped *Catch 23* would have earned every word said about it.
 
-**A series builds its interiors beside its covers.** Give each volume a manuscript and the interior is set **first**, so each spine is drawn from the count that came out of the file just written rather than from a number somebody typed five times. A volume with no manuscript loses its interior and nothing else; four good volumes still go.
+**A series builds its interiors beside its covers** — and its ebooks. Give each volume a manuscript, in any of the formats above, and the interior is set **first**, so each spine is drawn from the count that came out of the file just written rather than from a number somebody typed five times. Each volume's EPUB carries the cover that run drew for it, so a volume's two editions cannot show different artwork. A series is where doing this by hand is worst: five manuscripts, five covers and five ebooks, each of which has to be the same book as the paperback beside it.
+
+A volume with no manuscript loses its interior and nothing else; four good volumes still go. The ebook is written **before** preflight, deliberately — a volume whose cover needs another look is exactly the one whose ebook is still worth having.
 
 ### Type
 
@@ -315,9 +341,17 @@ Transparency is flattened **without losing the type**. Rasterising the whole cov
 
 **Interior PDF** — the book's own pages, written from the Interior tab, at the trim the cover is drawn for. The preview goes through the same drawing code as the writer, because a formatter whose preview lies is worse than none.
 
+**EPUB ebook** — the same book as the paperback, written for a screen. Not a corrected copy of your source, which is a different thing: a *new* epub is written out of the structured book this app has already read, corrected the chapters of and set the punctuation in, so whatever came in — Word, Markdown, a PDF, an EPUB — comes out as a clean ebook with one document per chapter. Nothing is written back to your own files.
+
+The words come through: emphasis, headings, quotations, listings, verse, tables, endnotes, the series and the blurb. **The page decisions do not.** Drop caps, running heads, folios, the gutter, hyphenation, justification and the recto rule are all decisions about a *page*, and an ebook has none — the reader's device makes them, at a size and a face the reader chose. That is why the stylesheet sets almost nothing beyond what carries meaning: a scene break centred, a listing monospaced, verse keeping its line endings, a quotation inset.
+
+Pictures are carried in and **fitted for the screen they will be read on**. A plate goes into a print interior at 300 DPI at the width it is drawn — 1,500 pixels and up — where the largest ebook reader is about 1,600 pixels down its long edge, so the rest is file size no reader can see, on a format every shop judges by its size. One real book here came down from 2.2 MB to 995 KB. Transparency decides the format and is read off the **pixels** rather than the file extension, because a cut-out diagram re-encoded as JPEG gains a black rectangle behind it — and the fitted bytes decide the file's name and its media type, so nothing is ever stored under a declared kind it is not.
+
+The cover inside it is rendered from the cover the paperback is printed from, so a book's two editions cannot show different artwork. That is the whole reason the ebook belongs in the run that drew the cover rather than in a converter.
+
 **Ebook cover JPEG** — a standalone front cover at the aspect ratio the store wants, with each option explained in terms of what it costs on this book.
 
-**Everything, in one press** — every output the cover produces, into one folder. A layer error refuses only the outputs that show that layer, rather than the whole batch.
+**Everything, in one press** — every output the book produces, into one folder, **the EPUB included**, so the name means what it says. A command called "everything" with an exception in it is one whose name stops meaning anything. A layer error refuses only the outputs that show that layer, rather than the whole batch, and the ebook is never refused for a cover problem: an ebook has no spine, no fold and no sheet, so an error about any of those says nothing about it. A cover-only project leaves it out of the bundle entirely rather than reporting it refused.
 
 **A 3D mockup PNG** for a listing or a post, of **both sides of the book** — the back being the one that carries the blurb and the barcode. It is drawn rather than flipped, because a horizontal flip would print the blurb backwards. Both are written from one file dialog, since a second dialog is the step at which one of a pair ends up in a different folder.
 
@@ -360,6 +394,8 @@ Autosaves go to `%LOCALAPPDATA%\KDPCoverStudio\recovery\`, **never to your proje
 
 The copy is a full package including artwork, because autosaving just the document recovers a cover with every image missing — which *looks* like it worked.
 
+**And the pictures a crashed run leaves behind are swept up.** Reading an illustrated manuscript extracts its pictures to a working folder, which is deleted on the way out — and a process that never gets a way out, because it crashed or was killed or the machine restarted with the app open, leaves a complete copy of every picture in the book sitting in the temp directory for ever. The next launch reclaims them. A folder is only taken when it is **both** old and unlocked, never either alone: a live lock file marks work in progress, because pictures are extracted once and then sit unread for hours while somebody works, so an untouched folder is exactly what a busy session looks like. Folders left by earlier versions are swept too.
+
 The app reopens the file you had open, comes back the size and place you left it, and **asks before discarding unsaved changes — on every command that replaces the open cover**: New, Open (and Open recent), the guided setup and "start the next volume". Only the guided setup used to ask, so Ctrl+N on an hour's work lost the hour. Save, Don't save, Cancel, from the same dialog the close path uses. A log is written to `%LOCALAPPDATA%\KDPCoverStudio\logs\`, readable while the app runs.
 
 ### Help that is drawn to your book
@@ -393,14 +429,19 @@ Projects are saved as `.kdpcoverstudio` — a ZIP holding the document plus a co
 
 ## Current release
 
-**Version 1.3.4** — `KDPCoverStudio.msi`, 53.7 MB. See the [release notes](https://github.com/raymondjstone/KDP-Cover-Studio/releases/latest) for what changed.
+**Version 1.4.0** — `KDPCoverStudio.msi`, 53.8 MB. See the [release notes](https://github.com/raymondjstone/KDP-Cover-Studio/releases/latest) for what changed.
 
-Verified at build: **2310 tests** (2309 passing, one skipped) and **390/390 template assertions across 39 templates**.
+Verified at build: **2489 tests** (2488 passing, one skipped) and **390/390 template assertions across 39 templates**.
+
+The headline of this one is that **the manuscript stopped being an EPUB**. Word, Markdown, plain text, HTML and PDF all read now; several files are one book in an order you can drag into shape; and EPUB became an *output* beside the print PDF rather than only an input. Projects from every earlier version load unchanged.
 
 ### Known limitations
 
 - **Footnotes are gathered as endnotes**, not set at the foot of their own page. That is the gutter's fixed point again in a place where it does not converge tidily — reserving room on a page for the notes that fall on it changes which notes fall on it — and it is named rather than quietly approximated.
-- **Indexes need the author's own terms.** The app suggests candidates and sets the result, but an EPUB carries no index markup and a machine that chose the terms itself would produce a concordance.
+- **Indexes need the author's own terms.** The app suggests candidates and sets the result, but a manuscript carries no index markup and a machine that chose the terms itself would produce a concordance.
+- **The index is left out of the EPUB**, rather than written with page numbers that mean nothing. It is the one real casualty of the ebook edition: an index is a list of pages, and an ebook has none.
+- **A PDF manuscript gives up its words and nothing else.** Its paragraphs are inferred from the marks on the page, and its italics, headings and scene breaks cannot be recovered at all. The app says so before it reads one rather than after — but if you have the book in the format you wrote it in, use that.
+- **Pictures in the ebook are fitted, which is a judgement rather than a rule.** Nothing in KDP's specification asks for it; the reasoning is that no shop-visible reader exceeds about 1,600 pixels and every shop judges an ebook by its file size.
 - **A cell spanning two columns is set in the column it starts in.** Tables are otherwise set with their columns.
 - **The exported PDFs are plain PDF, not PDF/X-1a.** KDP says PDF/X "preferred" and accepts plain PDF, which is first on its own list of formats; PDF/X-1a needs every colour in CMYK, greyscale or a named spot, and the renderer writes DeviceRGB with no switch to change it. The app now **measures a PDF against the standard clause by clause** and says which one fails, rather than assuming. Fonts are embedded as subsets, which is the same class of recommendation.
 - **The soft proof is a standard SWOP profile, not Amazon's press.** Amazon publishes no ICC profile for its printers, so the closest honest answer is a standard coated CMYK profile — which is what every string the feature produces names. A better profile dropped into Windows' colour folder is picked up without a code change.
